@@ -22,6 +22,7 @@
     }
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": "all",
     "icon": [
@@ -31,6 +32,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDMwNkFFRUJDNEY2QTlDNDcKUldSSG5HcFB2TzVxTU9KOGpGSGpCOUxkTzhiREJsbi9DaTd2dFJ4WWxicVU1QnJ2Uit3S2hDenAK",
+      "endpoints": [
+        "https://github.com/SilasMeyer4/adventure-world/releases/latest/download/version.json"
+      ]
+    }
   }
-  
 }
