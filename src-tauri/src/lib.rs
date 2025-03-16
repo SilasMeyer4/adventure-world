@@ -3,6 +3,10 @@
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 use tauri_plugin_updater::UpdaterExt;
 
+mod database;
+mod program;
+mod database_manager;
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!(
@@ -30,7 +34,17 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![
+            greet, 
+            database::create_database,
+            database::add_entity,
+            database::add_character,
+            database::add_item,
+            database::add_place,
+            database::add_encounter,
+            database::add_encounter_entity,
+            database::add_entity_item
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

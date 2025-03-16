@@ -8,6 +8,10 @@ const name = ref("");
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
   greetMsg.value = await invoke("greet", { name: name.value });
+  await invoke("create_database", { dbpath: "steven.dnd" });
+
+  await invoke("add_entity", { name: "steven" , description: "wiwwuwuw"});
+
 }
 </script>
 
