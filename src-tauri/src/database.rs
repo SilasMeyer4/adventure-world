@@ -7,14 +7,24 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn new(db_path: &str) -> Result<Self> {
+    pub fn load_or_create_database(db_path: &str) -> Result<Self> {
         let dir_path = "data/";
+        let full_path: String = "./data/".to_string() + db_path;
+
 
         if !Path::new(dir_path).exists() {
             fs::create_dir_all(dir_path);
         }
-        let full_path: String = "./data/".to_string() + db_path;
-        let conn = Connection::open(full_path)?;
+
+        let conn = Connection::open(&full_path)?;
+
+        if Path::new(&full_path).exists() {
+            println!("Database already exists: {}", full_path);
+            return Ok(Database {
+                conn: Arc::new(Mutex::new(conn)),
+            });
+        }
+
 
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS enemies (
@@ -172,7 +182,7 @@ impl Database {
 #[command]
 pub fn create_database(dbpath: String) -> Result<String, String> {
     println!("Creating database at path: {}", dbpath);
-    let _ = Database::new(&dbpath).map_err(|e| e.to_string())?;
+    let _ = Database::load_or_create_database(&dbpath).map_err(|e| e.to_string())?;
 
     Ok("Database created successfully".into())
 }

@@ -1,23 +1,50 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeMount, onMounted, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+import Editor from "./components/Editor.vue";
+import ConfigEditor from "./components/ConfigEditor.vue";
+import { errorMessages } from "vue/compiler-sfc";
+import { app } from "@tauri-apps/api";
+import { emit, listen} from "@tauri-apps/api/event";
+import Topbar from "./components/Topbar.vue";
+
+interface Payload {
+  message: string;
+}
+
 
 const greetMsg = ref("");
 const name = ref("");
 
+const databaseState = ref("");
+
+
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
   greetMsg.value = await invoke("greet", { name: name.value });
-  await invoke("create_database", { dbpath: "steven.dnd" });
-
   await invoke("add_entity", { name: "steven" , description: "wiwwuwuw"});
 
 }
+
+onMounted(() => {
+
+listen("database_load", (event) => {
+  console.log("Database load event:", event.payload);
+});
+
+}) 
+
+
 </script>
 
 <template>
+  
   <main class="container">
-    <h1>Welcome to Tauri + Vue</h1>
+    <Topbar></Topbar>
+
+    <h1>{{databaseState}}</h1>
+
+    <ConfigEditor></ConfigEditor>
 
     <div class="row">
       <a href="https://vitejs.dev" target="_blank">
