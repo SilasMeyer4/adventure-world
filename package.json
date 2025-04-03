@@ -10,8 +10,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-dialog": "^2.2.0",
+    "@tauri-apps/plugin-dialog": "^2.2.1",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-updater": "^2.6.0",
     "@tiptap/extension-code-block": "^2.11.5",
@@ -26,6 +27,7 @@
     "@tiptap/vue-3": "^2.11.5",
     "lowlight": "^3.3.0",
     "vue": "^3.5.13",
+    "vue3-select": "^0.1.2",
     "vuetify": "^3.7.18"
   },
   "devDependencies": {

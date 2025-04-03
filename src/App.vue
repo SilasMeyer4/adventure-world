@@ -6,7 +6,18 @@ import ConfigEditor from "./components/ConfigEditor.vue";
 import { errorMessages } from "vue/compiler-sfc";
 import { app } from "@tauri-apps/api";
 import { emit, listen} from "@tauri-apps/api/event";
-import Topbar from "./components/Topbar.vue";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import Sidebar from "./components/Sidebar.vue";
+import { sidebarWidth } from "./components/SidebarState";
+import { components } from "vuetify/dist/vuetify.js";
+import "vue3-select/dist/vue3-select.css";
+import LootMain from "./components/Loot/LootMain.vue"
+import { currentMenu } from "./components/SidebarState";
+import { NavbarMenus } from "./components/SidebarState";
+import Home from "./components/Home/Home.vue";
+import "./style.css"
+import HomeMain from "./components/Home/HomeMain.vue";
+import SettingsMain from "./components/SettingsMenu/SettingsMain.vue";
 
 interface Payload {
   message: string;
@@ -15,6 +26,7 @@ interface Payload {
 
 const greetMsg = ref("");
 const name = ref("");
+
 
 const databaseState = ref("");
 
@@ -40,30 +52,11 @@ listen("database_load", (event) => {
 <template>
   
   <main class="container">
-    <Topbar></Topbar>
-
-    <h1>{{databaseState}}</h1>
-
-    <ConfigEditor></ConfigEditor>
-
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <form class="row" @submit.prevent="greet">
-      <input id="greet-input" v-model="name" placeholder="Enter a name..." />
-      <button type="submit">Greet</button>
-    </form>
-    <p>{{ greetMsg }}</p>
+    <Sidebar/>
+    <HomeMain v-if="currentMenu === NavbarMenus.HOME"/>
+    <LootMain v-if="currentMenu === NavbarMenus.LOOT"/>
+    <SettingsMain v-if="currentMenu === NavbarMenus.SETTINGS"/>
+   
   </main>
 </template>
 

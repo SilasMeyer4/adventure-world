@@ -5,6 +5,10 @@ use std::io::Write;
 use tauri::{command, State};
 use std::sync::{Mutex, Arc};
 
+enum ConfigType {
+    Settings,
+    SaveData,
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
