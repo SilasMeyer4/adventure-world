@@ -7,24 +7,9 @@ use tauri_plugin_updater::UpdaterExt;
 use tauri::{AppHandle, Emitter, Manager};
 use tauri::App;
 
-mod database;
-mod program;
 mod database_manager;
 mod config;
 
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-    message: String,
-}
-
-
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!(
-        "Hello, {}! This is the last auto update test hopefully",
-        name
-    )
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -35,26 +20,28 @@ pub fn run() {
             let handle = app.handle().clone();
             database_init(app);
             config_init(app);
-            save_init(app);
             updater_init(handle);
             
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![
-            greet, 
-            database::create_database,
-            database::add_entity,
-            database::add_character,
-            database::add_item,
-            database::add_place,
-            database::add_encounter,
-            database::add_encounter_entity,
-            database::add_entity_item,
-            config::get_config,
-            config::save_config,
-            config::get_config_as_string,
-            config::set_config,
+        .invoke_handler(tauri::generate_handler![ 
+            database_manager::database::create_database,
+            database_manager::database::add_entity,
+            database_manager::database::add_character,
+            database_manager::database::add_item,
+            database_manager::database::add_place,
+            database_manager::database::add_encounter,
+            database_manager::database::add_encounter_entity,
+            database_manager::database::add_entity_item,
+            database_manager::entities::insert_monster,
+            database_manager::loot_groups::add_loot_group,
+            database_manager::loot_groups::get_loot_group_by_id,
+            database_manager::loot_groups::search_loot_group_by_name,
+            config::manager::set_save_data_config,
+            config::manager::set_settings_config,
+            config::manager::save_configs,
+            
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -93,7 +80,7 @@ async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
 
 
 fn database_init(app: &App) {
-    match database::Database::load_or_create_database("database.dnd") {
+    match database_manager::database::Database::load_or_create_database("database.dnd") {
         Ok(db) => {
             app.manage(db);
             app.emit("database_load", "Loaded Database Sucessfully").unwrap(); //Does nothing?
@@ -110,40 +97,15 @@ fn database_init(app: &App) {
 }
 
 fn config_init(app: &App) {
-    match config::Config::load_or_create_config("data/config.toml") {
-        Ok(config) => {
-            let config = Arc::new(Mutex::new(config));
-            app.manage(config);
-      
-            app.emit("config_load", "Loaded Config Sucessfully").unwrap();
-            println!("Config loaded successfully");
-        }
-    
-        Err(error) => {
-            let error_msg = format!("Config failed to load: {}", error);
-            println!("Error loading Config: {}", error_msg);
-            app.emit("config_load", format!("Failed to load Config {}", error_msg)).unwrap();
-            
-        }
-    }
-}
 
-fn save_init(app: &App) {
-    match config::Config::load_or_create_config("data/save.toml") {
-        Ok(save) => {
-            app.manage(save);
-      
-            app.emit("save_load", "Loaded Save Sucessfully").unwrap();
-            println!("config loaded successfully");
-        }
-    
-        Err(error) => {
-            let error_msg = format!("Save failed to load: {}", error);
-            println!("Error loading Save: {}", error_msg);
-            app.emit("save_load", format!("Failed to load Save {}", error_msg)).unwrap();
+    let config_manager = config::ConfigManager::new(); // Assuming you have a `new` method for creating the ConfigManager instance
             
-        }
-    }
+    // Wrap the ConfigManager inside Arc and Mutex for thread safety
+    let config_manager = Arc::new(Mutex::new(config_manager));
+
+    // Set the ConfigManager as state for the app
+    app.manage(config_manager);
+
 }
 
 fn updater_init(app_handle: AppHandle) {

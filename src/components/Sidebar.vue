@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar" :style="{width: sidebarWidth}">
-        <h1 @click="toggleSidebar">
+        <h1 @click="toggleSidebar" class="sidebar-header">
             <span v-if="collapsed">
                 <div>A</div>
                 <div>V</div>
@@ -23,7 +23,13 @@
 
             <div class="sidebar-element" @click="currentMenu = NavbarMenus.LOOT" :class="{ active: currentMenu === NavbarMenus.LOOT }">
                 <i class="fa-solid fa-gem"></i> <!--gem icon-->
-                <Span v-if="!collapsed">Loot</Span>
+                <span v-if="!collapsed">Loot</span>
+                
+            </div>
+
+            <div class="sidebar-element" @click="currentMenu = NavbarMenus.DATABASE" :class="{ active: currentMenu === NavbarMenus.DATABASE }">
+                <i class="fa-solid fa-database"></i> <!--Database icon-->
+                <span v-if="!collapsed">Database</span>
                 
             </div>
 
@@ -37,8 +43,8 @@
 
     
 
-        <span class="collapsed-icon" :class="{'rotate-180': collapsed}" @click="toggleSidebar">
-            <i class="fa-solid fa-arrow-left"></i>
+        <span class="collapsed-icon" @click="toggleSidebar">
+            <i class="fa-solid fa-bars"></i>
         </span>
     </div>
 </template>
@@ -76,6 +82,9 @@ import { collapsed, toggleSidebar, sidebarWidth, NavbarMenus, currentMenu } from
     flex-direction: column;
     align-items: flex-start;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        /* Ensure the sidebar elements are properly contained */
+        overflow: hidden;  /* Prevents elements from overflowing */
+    box-sizing: border-box; /* Ensures padding is accounted for */
 }
 
 /* Title at the top */
@@ -92,9 +101,17 @@ import { collapsed, toggleSidebar, sidebarWidth, NavbarMenus, currentMenu } from
     transition: color 0.3s;
 }
 
+.sidebar-header{
+    display: flex;
+    justify-content: center; /* Center the items horizontally */
+    align-items: center; /* Center the items vertically */
+    gap: 10px; /* Space between the "A" and "V" */
+    width: 100%; /* Ensure the header takes up the full width */
+}
+
 .sidebar-element {
     display: flex;
-    align-items: center;
+    align-items: left;
     padding: 20px;
     font-size: 1.1rem;
     font-weight: bold;
@@ -102,6 +119,8 @@ import { collapsed, toggleSidebar, sidebarWidth, NavbarMenus, currentMenu } from
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
     width: 100%;
+    box-sizing: border-box; /* Ensures proper box sizing inside the sidebar */
+    margin-left: -5px;
 }
 
 /* Collapsed sidebar icon rotation */
@@ -114,12 +133,13 @@ import { collapsed, toggleSidebar, sidebarWidth, NavbarMenus, currentMenu } from
     padding: 0.75em;
     color: var(--sidebar-text-color-inactive);
     font-size: 1.5rem;
-    transition: color 0.3s;
+    transition: color 0.3s ease;
 }
 
 .sidebar-element span {
     transition: opacity 0.3s ease;
 }
+
 
 /* Active Menu Item */
 .sidebar-element.active {
@@ -133,10 +153,13 @@ import { collapsed, toggleSidebar, sidebarWidth, NavbarMenus, currentMenu } from
 
 .collapsed-icon:hover {
     color: var(--sidebar-text-color);
+ 
 }
 
 .sidebar-element:hover {
     background-color: var(--sidebar-item-hover);
+    transform: scale(1.05);
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 /* Icon size */
@@ -150,27 +173,16 @@ import { collapsed, toggleSidebar, sidebarWidth, NavbarMenus, currentMenu } from
 /* Hide text when collapsed */
 .collapsed .sidebar-element {
     justify-content: center;
-    text-align: center;
+    padding-left: 10px;  /* Reduce left padding */
+    margin-left: 0; /* Remove left margin */
+    margin-right: 0; /* Remove right margin */
 }
 
 .collapsed .sidebar-element i {
     margin-right: 0;
+    font-size: 1rem; /* Smaller icon size in collapsed state */
 }
 
-/* Hide text when collapsed */
-.collapsed .sidebar-element {
-    justify-content: center;
-}
-
-.collapsed .sidebar-element i {
-    margin-right: 0;
-}
-
-/* Hide the text but keep space for the icon */
-.collapsed .sidebar-element {
-    width: 50px; /* Same width as icons */
-    text-align: center;
-}
 
 .collapsed .sidebar-element i + span {
     display: none; /* Hide text */

@@ -1,10 +1,14 @@
-use rusqlite::{Connection, Params, Result};
+use rusqlite::{Connection, Result};
 use std::{path::Path, sync::{Arc, Mutex}, fs};
 use tauri::{command, State};
 
+use super::entities;
+use super::loot_groups;
+
 pub struct Database {
-    conn: Arc<Mutex<Connection>>
+    pub conn: Arc<Mutex<Connection>>
 }
+
 
 impl Database {
     pub fn load_or_create_database(db_path: &str) -> Result<Self> {
@@ -18,19 +22,67 @@ impl Database {
 
         let conn = Connection::open(&full_path)?;
 
-        if Path::new(&full_path).exists() {
-            println!("Database already exists: {}", full_path);
-            return Ok(Database {
-                conn: Arc::new(Mutex::new(conn)),
-            });
-        }
+        // if Path::new(&full_path).exists() {
+        //     println!("Database already exists: {}", full_path);
+        //     return Ok(Database {
+        //         conn: Arc::new(Mutex::new(conn)),
+        //     });
+        // }
 
+        entities::create_entity_table(&conn);
+        loot_groups::create_loot_group_table(&conn);
+            // conn.execute(
+            //     "CREATE TABLE IF NOT EXISTS entities (
+            //         entity_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            //         name TEXT NOT NULL,
+            //         kind TEXT NULL,
+            //         initiative INTEGER NULL,
+            //         health INTEGER NULL
+            //         armor_class INTEGER NULL,
+            //         speed_ground INTEGER NULL,
+            //         speed_air INTEGER NULL,
+            //         speed_water INTEGER NULL,
+            //         strength INTEGER NULL,
+            //         dexterity INTEGER NULL,
+            //         constitution INTEGER NULL,
+            //         intelligence INTEGER NULL,
+            //         wisdom INTEGER NULL,
+            //         charisma INTEGER NULL,`
+            //         skills TEXT NULL,
+            //         gear TEXT NULL,
+            //         challenge_rating INTEGER NULL,
+            //         xp INTEGER NULL,
+            //         traits TEXT NULL,
+            //         actions TEXT NULL,
+            //         bonus_actions TEXT NULL,
+            //     )",
+            //     [],
+            // )?;
 
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS enemies (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conn.execute( //TODO Create table for Entity Languages
+                "CREATE TABLE IF NOT EXISTS entity_languages (
+                    entity_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
-                    description TEXT NULL
+                    kind TEXT NULL,
+                    initiative INTEGER NULL,
+                    health INTEGER NULL,
+                    armor_class INTEGER NULL,
+                    speed_ground INTEGER NULL,
+                    speed_air INTEGER NULL,
+                    speed_water INTEGER NULL,
+                    strength INTEGER NULL,
+                    dexterity INTEGER NULL,
+                    constitution INTEGER NULL,
+                    intelligence INTEGER NULL,
+                    wisdom INTEGER NULL,
+                    charisma INTEGER NULL,
+                    skills TEXT NULL,
+                    gear TEXT NULL,
+                    challenge_rating INTEGER NULL,
+                    xp INTEGER NULL,
+                    traits TEXT NULL,
+                    actions TEXT NULL,
+                    bonus_actions TEXT NULL
                 )",
                 [],
             )?;
@@ -54,7 +106,7 @@ impl Database {
             )?;
         
             conn.execute(
-                "CREATE TABLE entity_items (
+                "CREATE TABLE IF NOT EXISTS entity_items (
                     entity_id INT,
                     item_id INT,
                     PRIMARY KEY (entity_id, item_id),
@@ -67,7 +119,7 @@ impl Database {
         
         
             conn.execute(
-                "CREATE TABLE places (
+                "CREATE TABLE IF NOT EXISTS places (
                     place_id INT PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
                     description TEXT
@@ -76,7 +128,7 @@ impl Database {
             )?;
         
             conn.execute(
-                "CREATE TABLE encounters (
+                "CREATE TABLE IF NOT EXISTS encounters (
                         encounter_id INT PRIMARY KEY,
                         place_id INT,
                         name VARCHAR(255),
@@ -88,7 +140,7 @@ impl Database {
         
         
             conn.execute(
-                "CREATE TABLE encounter_entities (
+                "CREATE TABLE IF NOT EXISTS encounter_entities (
                         encounter_id INT,
                         entity_id INT,
                         PRIMARY KEY (encounter_id, entity_id),

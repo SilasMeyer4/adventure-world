@@ -14,29 +14,15 @@ import "vue3-select/dist/vue3-select.css";
 import LootMain from "./components/Loot/LootMain.vue"
 import { currentMenu } from "./components/SidebarState";
 import { NavbarMenus } from "./components/SidebarState";
-import Home from "./components/Home/Home.vue";
 import "./style.css"
 import HomeMain from "./components/Home/HomeMain.vue";
 import SettingsMain from "./components/SettingsMenu/SettingsMain.vue";
-
-interface Payload {
-  message: string;
-}
-
-
-const greetMsg = ref("");
-const name = ref("");
+import DatabaseMain from "./components/Database/DatabaseMain.vue";
+import CharactersMain from "./components/Characters/CharactersMain.vue";
 
 
 const databaseState = ref("");
 
-
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsg.value = await invoke("greet", { name: name.value });
-  await invoke("add_entity", { name: "steven" , description: "wiwwuwuw"});
-
-}
 
 onMounted(() => {
 
@@ -50,11 +36,13 @@ listen("database_load", (event) => {
 </script>
 
 <template>
-  
+  <Sidebar/>
   <main class="container">
-    <Sidebar/>
+    
     <HomeMain v-if="currentMenu === NavbarMenus.HOME"/>
+    <CharactersMain v-if="currentMenu === NavbarMenus.CHARACTERS"/>
     <LootMain v-if="currentMenu === NavbarMenus.LOOT"/>
+    <DatabaseMain v-if="currentMenu === NavbarMenus.DATABASE"/>
     <SettingsMain v-if="currentMenu === NavbarMenus.SETTINGS"/>
    
   </main>
@@ -94,6 +82,8 @@ listen("database_load", (event) => {
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  width: 100%; /* Ensure container takes full width */
+   margin-left: 70px; /* Adjust width to collapsed siebar width */
 }
 
 .logo {

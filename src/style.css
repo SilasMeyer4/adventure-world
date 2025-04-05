@@ -7,7 +7,7 @@
     padding: 15px;
     position: fixed;
     top: 0;
-    left: 0;
+    left: 70px; /* the sidebar width */
     right: 0;
     height: 50px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -41,4 +41,36 @@
 .menu-body {
     margin-top: 70px;
     padding: 20px;
+}
+
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    width: 80%;
+  }
+  
+  .table-container th, .table-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  .table-container tr:hover {
+    background-color: #777;
+  }
+
+th {
+    background-color: #111;
+}
+
+tr {
+    background-color: #444;
 }
