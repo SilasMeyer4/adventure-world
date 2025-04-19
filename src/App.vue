@@ -19,6 +19,7 @@ import HomeMain from "./components/Home/HomeMain.vue";
 import SettingsMain from "./components/SettingsMenu/SettingsMain.vue";
 import DatabaseMain from "./components/Database/DatabaseMain.vue";
 import CharactersMain from "./components/Characters/CharactersMain.vue";
+import { create_data_directory } from "./components/Characters/characters";
 
 
 const databaseState = ref("");
@@ -26,11 +27,9 @@ const databaseState = ref("");
 
 onMounted(() => {
 
-listen("database_load", (event) => {
-  console.log("Database load event:", event.payload);
-});
+  create_data_directory();
 
-}) 
+});
 
 
 </script>

@@ -1,7 +1,7 @@
-use serde::Deserialize;
 use crate::database_manager::database::Database;
-use tauri::State;
 use rusqlite::{Connection, Result};
+use serde::Deserialize;
+use tauri::State;
 
 #[derive(Debug, Deserialize)]
 pub struct Monster {
@@ -15,7 +15,7 @@ pub struct Monster {
     pub ac: Vec<i32>,
     pub hp: Hp,
     pub speed: Speed,
-    pub str_: i32,  // Rename to avoid keyword conflict
+    pub str_: i32, // Rename to avoid keyword conflict
     pub dex: i32,
     pub con: i32,
     pub int_: i32,
@@ -87,12 +87,12 @@ pub fn create_entity_table(conn: &Connection) -> Result<(), String> {
             misc_tags TEXT,
             has_token BOOLEAN
         );
-        "
-    ).expect("Was nota able to create entity table");
+        ",
+    )
+    .expect("Was nota able to create entity table");
 
     Ok(())
 }
-
 
 #[tauri::command]
 pub fn insert_monster(db: State<'_, Database>, monster: Monster) -> Result<(), String> {
@@ -148,7 +148,8 @@ pub fn insert_monster(db: State<'_, Database>, monster: Monster) -> Result<(), S
             monster.misc_tags.map(|v| v.join(",")),
             monster.hasToken.unwrap_or(false),
         ],
-    ).map_err(|e| e.to_string())?;
+    )
+    .map_err(|e| e.to_string())?;
 
     Ok(())
 }

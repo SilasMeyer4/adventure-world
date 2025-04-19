@@ -1,6 +1,7 @@
 use rusqlite::{Connection, Result};
-use std::{path::Path, sync::{Arc, Mutex}, fs};
-use tauri::{command, State};
+use std::{sync::{Arc, Mutex}, fs};
+use tauri::{command, Manager, State};
+use std::path::{Path, PathBuf};
 
 use super::entities;
 use super::loot_groups;
@@ -11,13 +12,13 @@ pub struct Database {
 
 
 impl Database {
-    pub fn load_or_create_database(db_path: &str) -> Result<Self> {
-        let dir_path = "data/";
-        let full_path: String = "./data/".to_string() + db_path;
+    pub fn load_or_create_database(path: &str, db_path: &str) -> Result<Self> {
+        let dir_path = Path::new(path).join("data");
+        let full_path = dir_path.join(db_path);
 
 
-        if !Path::new(dir_path).exists() {
-            fs::create_dir_all(dir_path);
+        if !dir_path.exists() {
+            fs::create_dir_all(&dir_path);
         }
 
         let conn = Connection::open(&full_path)?;
@@ -231,15 +232,6 @@ impl Database {
 }
 
 
-#[command]
-pub fn create_database(dbpath: String) -> Result<String, String> {
-    println!("Creating database at path: {}", dbpath);
-    let _ = Database::load_or_create_database(&dbpath).map_err(|e| e.to_string())?;
-
-    Ok("Database created successfully".into())
-}
-
-
 // These functions now act as Tauri commands
 #[command]
 pub fn add_entity(db: State<'_, Database>, name: String, description: Option<String>) -> Result<(), String> {
@@ -275,3 +267,6 @@ pub fn add_encounter_entity(db: State<'_, Database>, encounter_id: i32, entity_i
 pub fn add_entity_item(db: State<'_, Database>, entity_id: i32, item_id: i32) -> Result<(), String> {
     db.add_entity_item(entity_id, item_id).map_err(|e| e.to_string())
 }
+//{
+ //   db.add_encounter_entity(encounter_id, entity_id).map_err(|e| e.to_string())
+//}

@@ -1,8 +1,7 @@
-use tauri::State;
-use serde::{Serialize, Deserialize};
 use crate::database_manager::database::Database;
 use rusqlite::{Connection, Result};
-
+use serde::{Deserialize, Serialize};
+use tauri::State;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct LootGroup {
@@ -11,16 +10,15 @@ pub struct LootGroup {
     amount: Option<u32>,
 }
 
-
-
 pub fn create_loot_group_table(conn: &Connection) -> Result<(), String> {
     conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS loot_group (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL UNIQUE,
             probability INTEGER NOT NULL
-        )"
-    ).expect("Was not able to create loot_group table");
+        )",
+    )
+    .expect("Was not able to create loot_group table");
 
     Ok(())
 }
@@ -37,21 +35,21 @@ pub fn add_loot_group(db: State<'_, Database>, lootgroup: LootGroup) -> Result<(
         ) VALUES (
             ?, ?, ?
         )",
-        rusqlite::params![
-            lootgroup.name,
-            lootgroup.probability,
-            lootgroup.amount,
-        ],
-    ).map_err(|e| e.to_string())?;
+        rusqlite::params![lootgroup.name, lootgroup.probability, lootgroup.amount,],
+    )
+    .map_err(|e| e.to_string())?;
 
     Ok(())
-
 }
 
 #[tauri::command]
 pub fn get_loot_group_by_id(db: State<'_, Database>, id: u32) -> Result<LootGroup, String> {
-    let conn = db.conn.lock().map_err(|e| e.to_string()).expect("Error locking");
-    
+    let conn = db
+        .conn
+        .lock()
+        .map_err(|e| e.to_string())
+        .expect("Error locking");
+
     // Prepare the query to select the loot group by its id
     let mut stmt = conn
         .prepare("SELECT id, name, probability, amount FROM loot_group WHERE id = ?")
@@ -71,10 +69,16 @@ pub fn get_loot_group_by_id(db: State<'_, Database>, id: u32) -> Result<LootGrou
     Ok(loot_group)
 }
 
-
 #[tauri::command]
-pub fn search_loot_group_by_name(db: State<'_, Database>, name: String) -> Result<Vec<LootGroup>, String> {
-    let conn = db.conn.lock().map_err(|e| e.to_string()).expect("Error locking database");
+pub fn search_loot_group_by_name(
+    db: State<'_, Database>,
+    name: String,
+) -> Result<Vec<LootGroup>, String> {
+    let conn = db
+        .conn
+        .lock()
+        .map_err(|e| e.to_string())
+        .expect("Error locking database");
 
     // Prepare the query to select loot groups by name using the LIKE operator
     let mut stmt = conn
@@ -92,7 +96,9 @@ pub fn search_loot_group_by_name(db: State<'_, Database>, name: String) -> Resul
         })
         .map_err(|e| format!("Failed to fetch loot groups: {}", e))?;
 
-    let result: Vec<LootGroup> = loot_groups.collect::<Result<_, _>>().map_err(|e| e.to_string())?;
+    let result: Vec<LootGroup> = loot_groups
+        .collect::<Result<_, _>>()
+        .map_err(|e| e.to_string())?;
 
     Ok(result)
 }

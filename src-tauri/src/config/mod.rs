@@ -1,7 +1,7 @@
+pub mod config;
+pub mod manager;
 pub mod save_data_config;
 pub mod settings_config;
-pub mod manager;
-pub mod config;
 
 pub use config::ConfigFile;
 pub use config::ConfigType;

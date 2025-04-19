@@ -29,11 +29,11 @@ import RollLoot from './RollLoot.vue';
 import Search from './Search.vue';
 
 enum Tab {
-    CREATETAB,
-    DATABASEMANAGER,
-    UPDATETABLE,
-    ROLLLOOT,
-    SEARCH
+    CREATETAB = "Create Tab",
+    DATABASEMANAGER = "Database Manager", 
+    UPDATETABLE = "Update Table",
+    ROLLLOOT = "Roll Loot",
+    SEARCH = "Search"
 }
 
 const currentTab = ref(Tab.CREATETAB);	
